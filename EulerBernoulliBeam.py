@@ -303,12 +303,12 @@ class EulerBernoulliBeam:
             
             
     def fc(self,x):
-        return -(self.p * self.g * np.sin(np.pi * x / self.length)) -480*self.width*self.depth * self.g 
+        return (pow(self.h, 4) / ( self.E * self.I ))*(-(self.p * self.g * np.sin(np.pi * x / self.length)) -480*self.width*self.depth * self.g)
         
     def Activity7(self):
         
         
-        for k in range(5,6):
+        for k in range(10,11):#initially thoguht I was supposed to find optimal n for 7
             #print k
             self.setN(10*pow(2,k))
             #print self.n
@@ -319,11 +319,18 @@ class EulerBernoulliBeam:
             self.bc = np.zeros(shape = (self.n,1))
             for j in range(1,self.n+1):
                 self.bc[j-1] = self.fc(self.xc[j])
-                print self.bc[j-1]
+                #print self.bc[j-1]
                 
             self.YCalculatedc = np.linalg.solve(self.Ac, self.bc)
+            
+            #print self.YCalculatedc
+            calcYc = self.YCalculatedc[int(np.floor(self.n/2.0))][0]
+            actualYc = self.y_xc(self.length/2.0)
             print self.YCalculatedc
-            print 'actual y:', self.y_xc(1)
+            #print calcyc
+            #print 'actual y:', self.y_xc(1)
+            errorc = np.abs(calcYc - actualYc)
+            print errorc
             #print self.Ac
             
             
@@ -371,5 +378,3 @@ def runBernoulli(): #moved these into their own program so it doesn't run each t
     
 #uncomment to runt he activities at launch of file
 runBernoulli()
-
-#lala
