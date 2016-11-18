@@ -11,6 +11,7 @@
 
 import numpy as np
 import matplotlib.pyplot as plt
+import math
 
 class EulerBernoulliBeam:
     def __init__(self, length, width, depth, n):
@@ -187,6 +188,10 @@ class EulerBernoulliBeam:
     def fConst(self):
         """f(x) represents only the weight of the beam itself (i.e. with no payload)"""
         return -480.0*self.width*self.depth*self.g
+    
+    def fConstWithS(self, x):
+        pi = math.pi
+        return -480.0*self.width*self.depth*self.g -self.p*self.g*math.sin(pi/self.length*x);
 
     def y_x(self, x):
         """y(x) represents the correct solution where f is constant"""
@@ -195,6 +200,14 @@ class EulerBernoulliBeam:
             return 0
         else:
             return (self.fConst() / (24.0*self.E*self.I)) * pow(x, 2) * (pow(x, 2) - 4.0*self.length*x + 6.0*pow(self.length, 2))
+    
+    def y_x_p(self, x):
+        if x == 0:
+            return 0
+        else:
+            pi = math.pi
+            return (self.fConst() / (24.0*self.E*self.I))* pow(x, 2)* pow(x, 2) - 4.0 * self.length * x + 6.0 * pow(self.length, 2)-((self.p*self.g*self.length)/(self.E*self.I*pi))*((((pow(self.length, 3))/(pow(pi, 3)))*(math.sin(pi*x/self.length))-(pow(x, 3)/6.0)+(self.length/2)*pow(x, 2)-((pow(self.length, 2))/(pow(pi, 2))*x)))
+        
           
     def y_xc(self, x):#y(x) for clamped version of beam
         if x == 0 or x == self.length:
@@ -232,6 +245,11 @@ class EulerBernoulliBeam:
         for i in self.x:
             self.yActual.append(self.y_x(i)) # Calculate the correct solution at each x_i
             
+    def Act5calcYactual(self):
+        self.yActual = []
+        for i in self.x:
+            self.yActual.append(self.y_x_p(i))
+    
     def calcYActualc(self):
         self.yActualc = []
 
@@ -253,6 +271,19 @@ class EulerBernoulliBeam:
         for i in yTemp:
             self.yCalculated.append(i[0])
 
+    def Act1MODAct5(self):
+        self.yCalculated =[0.0]
+        b = np.zeros(shape=(self.n,1))
+        
+        for i in range (self.n):
+            bi = (pow(self.h, 4) / ( self.E * self.I ))*self.fConstWithS(i)
+            b[i][0] = bi
+
+        yTemp = np.linalg.solve(self.A, b)
+
+        for i in yTemp:
+            self.yCalculated.append(i[0])
+    
     def Activity2(self):
         """Activity 2 - Plot Solution from step 1 agains the correct solution and check the error at the end of the beam"""
         self.calcYActual()
@@ -269,6 +300,21 @@ class EulerBernoulliBeam:
             
             error = self.endError()
             print changingN, '\t\t', k , '\t\t', error
+    
+    def Activity5(self):
+        print 'n \t\t k \t\t error'
+        for k in range (1, 12):
+            changingN = 10 * (pow(2,k))
+            self.setN(changingN)
+            self.Act1MODAct5()
+            self.Act5calcYactual()  
+            
+            error = self.endError()
+            print changingN, '\t\t', k , '\t\t', error
+            
+        print '\n End of Beam Error:',self.endError()
+        self.plotA2()
+        print '\n'
         
     def Activity6(self):
         """Activity 6 - Solve for each Y with a 70kg diver balancing on the last 20cm of the beam"""
@@ -359,6 +405,10 @@ def runBernoulli(): #moved these into their own program so it doesn't run each t
     # Activity 3
     print 'Activity 3:'
     #EBB.Activity3()
+
+    # Activity 5
+    print 'Activity 5:'
+    EBB.Activity5()
 
     # Activity 6
     print 'Activity 6:'
