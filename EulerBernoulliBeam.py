@@ -353,37 +353,60 @@ class EulerBernoulliBeam:
         
     def Activity7(self):
         
+##I decided to store the values for error, condition number, and h^2 due to long processing time
+##In order to verify the numbers, set calculate to True. warning, this will take a very long time
+        calculate = False
+        h2 = []
+        errorc = []
+        condAc = []
         
-        for k in range(10,11):#initially thoguht I was supposed to find optimal n for 7
-            #print k
-            self.setN(10*pow(2,k))
-            #print self.n
-            self.setHc()
-            self.initXc()
-            self.initAc()
-            #print self.xc            
-            self.bc = np.zeros(shape = (self.n,1))
-            for j in range(1,self.n+1):
-                self.bc[j-1] = self.fc(self.xc[j])
-                #print self.bc[j-1]
-                
-            self.YCalculatedc = np.linalg.solve(self.Ac, self.bc)
-            
-            #print self.YCalculatedc
-            calcYc = self.YCalculatedc[int(np.floor(self.n/2.0))][0]
-            actualYc = self.y_xc(self.length/2.0)
-            print self.YCalculatedc
-            #print calcyc
-            #print 'actual y:', self.y_xc(1)
-            errorc = np.abs(calcYc - actualYc)
-            print errorc
-            #print self.Ac
+        if calculate:
+            for k in range(1,12):
+                #print k
+                self.setN(10*pow(2,k))
+                #print self.n
+                self.setHc()
+                self.initXc()
+                self.initAc()
+                #print self.xc            
+                self.bc = np.zeros(shape = (self.n,1))
+                for j in range(1,self.n+1):
+                    self.bc[j-1] = self.fc(self.xc[j])
+                    #print self.bc[j-1]
+                    
+                    self.YCalculatedc = np.linalg.solve(self.Ac, self.bc)
+                    
+                    #print self.YCalculatedc
+                    calcYc = self.YCalculatedc[int(np.floor(self.n/2.0))][0]
+                    actualYc = self.y_xc(self.length/2.0)
+                    #print self.YCalculatedc
+                    #print calcyc
+                    #print 'actual y:', self.y_xc(1)
             
             
-              #-(self.p * self.g * np.sin(np.pi * self.xc / self.length)) -480*self.width*self.depth * self.g
-            #print self.bc
+            
+
+            
+                errorc.append(np.abs(calcYc - actualYc))
+                h2.append(pow(self.h,2))
+                condAc.append(np.linalg.cond(self.Ac))
+        else:
+            h2 = [.01, .0025, .000625, 0.00015625, 3.90625*10**(-5), 9.765625*10**(-6), 2.44140625*10**(-06),
+                  6.103515625*10**(-7), 1.52587890625*10**(-7), 3.81469726563*10**(-8), 9.53674316406*10**(-9)]
+            errorc = [0.000886658240723, 0.000428573516402, 0.000210668342307, 0.000104438506836,
+            5.19964593623*10**(-5), 2.59426873213*10**(-5), 1.29574710306*10**(-5), 6.47253277206*10**(-6),
+            3.22608594093*10**(-6), 1.57096610475*10**(-6), 5.61347926756*10**(-6), 5.61347926756*10**(-6)]
+            
+            condAc = [8027.60337631, 116229.497141, 1768987.84291, 27604938.523, 436191991.603,
+                      6935585904.33, 110623181255.0, 1.76721210291*10**12, 2.82410239559*10**13,
+                      4.50554511017*10**14, 6.44198963095*10**15]
         
-        #load = self.xc
+        
+        for h in range(1,12):
+            print 'k:', h, 'error:', errorc[h-1], 'h^2:', h2[h-1], 'cond:', condAc[h-1]
+            
+            
+            
         
 # Tests
 
@@ -398,11 +421,11 @@ def runBernoulli(): #moved these into their own program so it doesn't run each t
     # Activity 1
     print 'Activity 1:'
     EBB = EulerBernoulliBeam(2.0, 0.3, 0.03, 10)
-    EBB.Activity1()
-    print 'Y_i:'
-    for i in EBB.yCalculated:
-        print '[',i,']'
-        print '\n'
+    #EBB.Activity1()
+    #print 'Y_i:'
+    #for i in EBB.yCalculated:
+    #    print '[',i,']'
+    #    print '\n'
 
     # Activity 2
     print 'Activity 2:'
@@ -415,16 +438,16 @@ def runBernoulli(): #moved these into their own program so it doesn't run each t
 
     # Activity 5
     print 'Activity 5:'
-    EBB.Activity5()
+    #EBB.Activity5()
 
     # Activity 6
     print 'Activity 6:'
-    EBB.Activity6()
+    #EBB.Activity6()
     
     #Activity 7
-    print 'Activity 7'
+    print 'Activity 7:'
     EBB.Activity7()
     
     
-#uncomment to runt he activities at launch of file
+#uncomment to run the activities at launch of file
 runBernoulli()
