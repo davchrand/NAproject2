@@ -405,7 +405,32 @@ class EulerBernoulliBeam:
         for h in range(1,12):
             print 'k:', h, 'error:', errorc[h-1], 'h^2:', h2[h-1], 'cond:', condAc[h-1]
             
-            
+    def Activity8(self):
+        print 'Double width:'
+        self.setW(self.width*2)
+        self.Activity6()
+
+        print 'Double depth:'
+        self.setW(self.width/2)
+        self.setD(self.depth*2)
+        self.Activity6()
+
+        area = self.width*self.length
+        r = math.sqrt(area/math.pi)
+
+        print 'Circular cross-section'
+        # circular cross-section
+        self.I = math.pi*pow(r, 4)/4.0
+        self.Activity6()
+
+        print 'Anular cross-section'
+        # anular cross-section - values used for r1 & r2 give an area that is ~= area of the rectangle
+        r2 = 2.0
+        r1 = 1.95167
+        self.I = math.pi*(pow(r2, 4) - pow(r1, 4))/4.0
+        self.Activity6()
+
+
             
         
 # Tests
@@ -421,32 +446,36 @@ def runBernoulli(): #moved these into their own program so it doesn't run each t
     # Activity 1
     print 'Activity 1:'
     EBB = EulerBernoulliBeam(2.0, 0.3, 0.03, 10)
-    #EBB.Activity1()
-    #print 'Y_i:'
-    #for i in EBB.yCalculated:
-    #    print '[',i,']'
-    #    print '\n'
+    EBB.Activity1()
+    print 'Y_i:'
+    for i in EBB.yCalculated:
+        print '[',i,']'
+        print '\n'
 
     # Activity 2
     print 'Activity 2:'
-    #EBB.Activity2()
+    EBB.Activity2()
     print '\n'
     
     # Activity 3
     print 'Activity 3:'
-    #EBB.Activity3()
+    EBB.Activity3()
 
     # Activity 5
     print 'Activity 5:'
-    #EBB.Activity5()
+    EBB.Activity5()
 
     # Activity 6
     print 'Activity 6:'
-    #EBB.Activity6()
+    EBB.Activity6()
     
     #Activity 7
     print 'Activity 7:'
     EBB.Activity7()
+
+    #Activity 8
+    print 'Activity 8:'
+    EBB.Activity8()
     
     
 #uncomment to run the activities at launch of file
